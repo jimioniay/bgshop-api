@@ -5,6 +5,7 @@ const router = express.Router();
 
 const validate = data => {
   const errors = {};
+  // data = {};w
 
   if (!data.name) errors.name = "This field can't be blank";
   if (!data.players) errors.players = "This field can't be blank";
@@ -18,26 +19,31 @@ const validate = data => {
 
 router.get('/', (req, res) => {
   const db = req.app.get('db');
-  db.collection('games').find({}).toArray((err, games) => {
-    if (err) {
-      res.status(500).json({ errors: { global: err } });
-      return;
-    }
+  db.collection('games')
+    .find({})
+    .toArray((err, games) => {
+      if (err) {
+        res.status(500).json({ errors: { global: err } });
+        return;
+      }
 
-    res.json({ games });
-  });
+      res.json({ games });
+    });
 });
 
 router.get('/:_id', (req, res) => {
   const db = req.app.get('db');
-  db.collection('games').findOne({ _id: new mongodb.ObjectId(req.params._id) }, (err, game) => {
-    if (err) {
-      res.status(500).json({ errors: { global: err } });
-      return;
-    }
+  db.collection('games').findOne(
+    { _id: new mongodb.ObjectId(req.params._id) },
+    (err, game) => {
+      if (err) {
+        res.status(500).json({ errors: { global: err } });
+        return;
+      }
 
-    res.json({ game });
-  });
+      res.json({ game });
+    },
+  );
 });
 
 router.post('/', (req, res) => {
@@ -60,25 +66,24 @@ router.post('/', (req, res) => {
 
 router.put('/:_id', (req, res) => {
   const db = req.app.get('db');
+  console.log(req.body);
   const { _id, ...gameData } = req.body.game;
   const errors = validate(gameData);
 
   if (Object.keys(errors).length === 0) {
-    db
-      .collection('games')
-      .findOneAndUpdate(
-        { _id: new mongodb.ObjectId(req.params._id) },
-        { $set: gameData },
-        { returnOriginal: false },
-        (err, r) => {
-          if (err) {
-            res.status(500).json({ errors: { global: err } });
-            return;
-          }
-
-          res.json({ game: r.value });
+    db.collection('games').findOneAndUpdate(
+      { _id: new mongodb.ObjectId(req.params._id) },
+      { $set: gameData },
+      { returnOriginal: false },
+      (err, r) => {
+        if (err) {
+          res.status(500).json({ errors: { global: err } });
+          return;
         }
-      );
+
+        res.json({ game: r.value });
+      },
+    );
   } else {
     res.status(400).json({ errors });
   }
@@ -87,14 +92,17 @@ router.put('/:_id', (req, res) => {
 router.delete('/:_id', (req, res) => {
   const db = req.app.get('db');
 
-  db.collection('games').deleteOne({ _id: new mongodb.ObjectId(req.params._id) }, err => {
-    if (err) {
-      res.status(500).json({ errors: { global: err } });
-      return;
-    }
+  db.collection('games').deleteOne(
+    { _id: new mongodb.ObjectId(req.params._id) },
+    err => {
+      if (err) {
+        res.status(500).json({ errors: { global: err } });
+        return;
+      }
 
-    res.json({});
-  });
+      res.json({});
+    },
+  );
 });
 
 export default router;
