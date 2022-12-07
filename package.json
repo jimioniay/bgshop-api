@@ -15,7 +15,7 @@
     "body-parser": "^1.16.0",
     "cors": "^2.8.5",
     "dotenv": "^4.0.0",
-    "express": "^4.14.0",
+    "express": "^4.17.3",
     "jsonwebtoken": "^7.2.1",
     "mongodb": "^2.2.21",
     "validator": "^6.2.1"
